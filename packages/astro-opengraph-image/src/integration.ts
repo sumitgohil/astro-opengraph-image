@@ -1,4 +1,3 @@
-import { HTMLRewriter } from "@worker-tools/html-rewriter/base64";
 import type { AstroIntegration } from "astro";
 import { stringify } from "devalue";
 import { createHash } from "node:crypto";
@@ -6,6 +5,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import type { Font } from "satori";
 import type { Plugin } from "vite";
+import { parse } from 'node-html-parser';
 import { convert } from "./convert";
 
 export interface Options {
@@ -85,31 +85,49 @@ async function transformFilePostBuild(
   options: Options,
   ogDir: URL,
 ) {
-  const rewriter = new HTMLRewriter();
-
-  rewriter.on('meta[property="og:image"]', {
-    // unfortunately this distribution of htmlrewriter is missing types
-    // for the element handlers, so we just specify any.
-    async element(element: any) {
-      const content = element.getAttribute("content");
-      if (!content) return;
-
-      const url = new URL(content);
-      if (url.pathname !== "/_og") return;
-
-      const png = await convert(url, options);
-      if (!png) return;
-
-      const hash = createHash("sha256").update(png).digest("base64url");
-
-      await mkdir(ogDir, { recursive: true });
-      await writeFile(new URL(`${hash}.png`, ogDir), png);
-
-      element.setAttribute("content", new URL(`/_og/${hash}.png`, url).href);
-    },
-  });
-
-  const input = await readFile(file, "utf-8");
-  const output = rewriter.transform(new Response(input));
-  await writeFile(file, await output.text());
+  try {
+    // Skip non-HTML files
+    if (!file.endsWith(".html") && !file.endsWith(".htm")) return;
+    
+    const input = await readFile(file, "utf-8");
+    
+    // Parse the HTML content using node-html-parser
+    const root = parse(input);
+    
+    // Find all meta tags with og:image property
+    const metaTags = root.querySelectorAll('meta[property="og:image"]');
+    
+    let modified = false;
+    
+    // Process each meta tag
+    for (const meta of metaTags) {
+      const content = meta.getAttribute("content");
+      if (!content) continue;
+      
+      try {
+        const url = new URL(content);
+        if (url.pathname !== "/_og") continue;
+        
+        const png = await convert(url, options);
+        if (!png) continue;
+        
+        const hash = createHash("sha256").update(png).digest("base64url");
+        
+        await mkdir(ogDir, { recursive: true });
+        await writeFile(new URL(`${hash}.png`, ogDir), png);
+        
+        meta.setAttribute("content", new URL(`/_og/${hash}.png`, url).href);
+        modified = true;
+      } catch (err) {
+        console.error(`Error processing meta tag:`, err);
+      }
+    }
+    
+    // Only write back to the file if changes were made
+    if (modified) {
+      await writeFile(file, root.toString());
+    }
+  } catch (error) {
+    console.error(`Error processing file ${file}:`, error);
+  }
 }

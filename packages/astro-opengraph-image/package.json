@@ -1,15 +1,21 @@
 {
-  "name": "astro-opengraph-image",
-  "version": "0.2.2",
+  "name": "@sumitgohil/astro-opengraph-image",
+  "version": "0.2.4",
   "description": "(hopefully) the easiest way to generate OpenGraph images from your astro site",
   "keywords": [
+    "astro-og",
+    "astro-opengraph",
+    "astro-opengraph-image",
+    "astro-og-image",
+    "astro-og-image-generator",
+    "astro-seo-image",
     "astro-component",
     "astro-integration",
     "image"
   ],
-  "homepage": "https://github.com/tombl/astro-opengraph-image",
+  "homepage": "https://github.com/sumitgohil/astro-opengraph-image",
   "repository": {
-    "url": "git+https://github.com/tombl/astro-opengraph-image.git"
+    "url": "git+https://github.com/sumitgohil/astro-opengraph-image.git"
   },
   "scripts": {
     "check": "astro check"
@@ -25,10 +31,10 @@
   ],
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
-    "@worker-tools/html-rewriter": "^0.1.0-pre.19",
     "devalue": "^5.1.1",
     "entities": "^6.0.0",
     "lz-string": "^1.5.0",
+    "node-html-parser": "^6.1.12",
     "satori": "^0.12.1",
     "satori-html": "^0.3.2"
   },

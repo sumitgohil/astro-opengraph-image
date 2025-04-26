@@ -25,19 +25,11 @@ export default defineConfig({
         {
           name: "Inter",
           data: await readFile(
-            "node_modules/@fontsource/inter/files/inter-latin-700-normal.woff",
+            "../../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff",
           ),
           style: "normal",
           weight: 700,
-        },
-        {
-          name: "Inter",
-          data: await readFile(
-            "node_modules/@fontsource/inter/files/inter-latin-400-normal.woff",
-          ),
-          style: "normal",
-          weight: 400,
-        },
+        }
       ],
     }),
   ],

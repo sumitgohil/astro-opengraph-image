@@ -13,7 +13,8 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
     "astro": "^5.5.2",
-    "astro-opengraph-image": "workspace:*"
+    "astro-opengraph-image": "workspace:*",
+    "install": "^0.13.0"
   },
   "devDependencies": {
     "@astrojs/cloudflare": "^12.3.0",
