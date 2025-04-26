@@ -111,12 +111,25 @@ async function transformFilePostBuild(
         const png = await convert(url, options);
         if (!png) continue;
         
-        const hash = createHash("sha256").update(png).digest("base64url");
+        // Check if a custom filename is provided
+        const customFilename = url.searchParams.get("filename");
+        let imageName: string;
+        
+        if (customFilename) {
+          // Use the custom filename but ensure it ends with .png
+          imageName = customFilename.endsWith(".png") 
+            ? customFilename 
+            : `${customFilename}.png`;
+        } else {
+          // Default behavior: generate hash-based filename
+          const hash = createHash("sha256").update(png).digest("base64url");
+          imageName = `${hash}.png`;
+        }
         
         await mkdir(ogDir, { recursive: true });
-        await writeFile(new URL(`${hash}.png`, ogDir), png);
+        await writeFile(new URL(imageName, ogDir), png);
         
-        meta.setAttribute("content", new URL(`/_og/${hash}.png`, url).href);
+        meta.setAttribute("content", new URL(`/_og/${imageName}`, url).href);
         modified = true;
       } catch (err) {
         console.error(`Error processing meta tag:`, err);

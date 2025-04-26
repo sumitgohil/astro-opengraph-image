@@ -18,7 +18,7 @@ Complete with a helpful toolbar app to display your image in development.
 
 ```sh
 # First, run this command to install the integration:
-npx astro add astro-opengraph-image
+npx astro add @sumitgohil/astro-opengraph-image
 
 # Next, you will want one or more fonts to use in your images,
 # I like the fonts available at https://www.npmjs.com/org/fontsource, e.g.:
@@ -28,7 +28,7 @@ npm install @fontsource/inter
 ```javascript
 // Then, update your astro.config.{mjs|ts} file to configure the integration:
 import { defineConfig } from "astro/config";
-import opengraphImage from "astro-opengraph-image";
+import opengraphImage from "@sumitgohil/astro-opengraph-image";
 import { readFile } from "node:fs/promises";
 
 export default defineConfig({
@@ -74,7 +74,7 @@ export default defineConfig({
 // Lastly, inside your <head>, render the OgImage component to
 // specify what you want in your image:
 
-import { OgImage } from "astro-opengraph-image/components";
+import { OgImage } from "@sumitgohil/astro-opengraph-image/components";
 ---
 
 <!doctype html>
@@ -94,6 +94,17 @@ import { OgImage } from "astro-opengraph-image/components";
   </head>
   <body>...</body>
 </html>
+```
+
+You can also specify a custom filename for your OpenGraph image:
+
+```astro
+<OgImage filename="my-custom-image">
+  <h1>The page with custom image name</h1>
+  <style is:inline>
+    h1 { color: blue; }
+  </style>
+</OgImage>
 ```
 
 > [!NOTE]

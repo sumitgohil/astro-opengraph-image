@@ -1,9 +1,17 @@
 ---
+interface Props {
+  filename?: string;
+}
+
+const { filename } = Astro.props;
 import lz from "lz-string";
 
 const html = await Astro.slots.render("default");
 const url = new URL("/_og", Astro.url);
 url.searchParams.set("html", lz.compressToEncodedURIComponent(html));
+if (filename) {
+  url.searchParams.set("filename", filename);
+}
 ---
 
 <meta property="og:image" content={url} />
