@@ -7,6 +7,7 @@ import type { Font } from "satori";
 import type { Plugin } from "vite";
 import { parse } from 'node-html-parser';
 import { convert } from "./convert";
+import type { AstroGlobal } from "astro";
 
 export interface Options {
   background: string;
@@ -14,6 +15,7 @@ export interface Options {
   height: number;
   scale: number;
   fonts: Font[];
+  site?: string;
 }
 
 export default function ogImage(options: Options): AstroIntegration {
@@ -105,8 +107,30 @@ async function transformFilePostBuild(
       if (!content) continue;
       
       try {
-        const url = new URL(content);
-        if (url.pathname !== "/_og") continue;
+        // Handle relative URLs by checking if content starts with / or _
+        let url;
+        try {
+          url = new URL(content);
+        } catch (e) {
+          // If URL creation fails, assume it's a relative path and create with a base
+          // Use Astro.site as the base URL
+          const site = options.site || "https://example.com"; // Fallback if site is not provided
+          url = new URL(content, site);
+        }
+        
+        if (url.pathname !== "/_og" && !url.pathname.startsWith("/_og/")) continue;
+        
+        // For /_og/filename.png pattern, we should extract the filename and skip conversion
+        if (url.pathname.startsWith("/_og/")) {
+          const imageName = url.pathname.substring(5); // Remove the /_og/ prefix
+          if (imageName) {
+            // Just copy the reference, no need to regenerate the image
+            const site = options.site || "https://example.com"; // Fallback if site is not provided
+            meta.setAttribute("content", new URL(`/_og/${imageName}`, site).href);
+            modified = true;
+            continue;
+          }
+        }
         
         const png = await convert(url, options);
         if (!png) continue;
@@ -129,7 +153,8 @@ async function transformFilePostBuild(
         await mkdir(ogDir, { recursive: true });
         await writeFile(new URL(imageName, ogDir), png);
         
-        meta.setAttribute("content", new URL(`/_og/${imageName}`, url).href);
+        const site = options.site || "https://example.com"; // Fallback if site is not provided
+        meta.setAttribute("content", new URL(`/_og/${imageName}`, site).href);
         modified = true;
       } catch (err) {
         console.error(`Error processing meta tag:`, err);

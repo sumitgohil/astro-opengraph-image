@@ -1,6 +1,6 @@
 {
   "name": "@sumitgohil/astro-opengraph-image",
-  "version": "0.2.4",
+  "version": "0.2.7",
   "description": "(hopefully) the easiest way to generate OpenGraph images from your astro site",
   "keywords": [
     "astro-og",

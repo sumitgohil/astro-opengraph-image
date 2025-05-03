@@ -17,6 +17,7 @@ export default defineConfig({
 
   integrations: [
     opengraphImage({
+      site: "https://mysite.example",
       background: "#111",
       width: 1200,
       height: 630,

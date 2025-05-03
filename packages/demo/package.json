@@ -13,7 +13,7 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
     "astro": "^5.5.2",
-    "astro-opengraph-image": "workspace:*",
+    "@sumitgohil/astro-opengraph-image": "workspace:*",
     "install": "^0.13.0"
   },
   "devDependencies": {
